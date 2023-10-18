@@ -1,6 +1,7 @@
 # readrides.py
 from collections import namedtuple
 import csv
+
 def trace_func(func, filename):
     import tracemalloc
     tracemalloc.start()
@@ -8,7 +9,6 @@ def trace_func(func, filename):
     print(f"Traced {func.__name__}")
     print('Memory Use: Current %d, Peak %d' % tracemalloc.get_traced_memory())
     tracemalloc.stop()
-    
 
 
 def read_rides_as_tuples(filename):
@@ -44,6 +44,7 @@ def read_rides_as_dicts(filename):
             records.append(record)
     return records
 
+
 def read_rides_as_class(filename):
     """Read ride data as a class"""
     records = []
@@ -59,6 +60,7 @@ def read_rides_as_class(filename):
             records.append(record)
     return records
 
+
 def read_rides_as_named_tuple(filename):
 
     records = []
@@ -73,6 +75,7 @@ def read_rides_as_named_tuple(filename):
             record = RowTuple(route, date, daytype, rides)
             records.append(record)
     return records
+
 
 def read_rides_as_slots(filename):
     records = []
@@ -95,6 +98,7 @@ class Row:
         self.date = date
         self.daytype = daytype
         self.rides = rides
+
 
 class RowSlot:
     __slots__ = ['route', 'date', 'daytype', 'rides']
