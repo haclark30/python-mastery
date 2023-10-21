@@ -2,6 +2,7 @@
 from collections import namedtuple
 import csv
 
+
 def trace_func(func, filename):
     import tracemalloc
     tracemalloc.start()
@@ -40,7 +41,8 @@ def read_rides_as_dicts(filename):
             date = row[1]
             daytype = row[2]
             rides = int(row[3])
-            record = {'route': route, 'date': date, 'daytype': daytype, 'rides': rides}
+            record = {'route': route, 'date': date,
+                      'daytype': daytype, 'rides': rides}
             records.append(record)
     return records
 
@@ -92,6 +94,25 @@ def read_rides_as_slots(filename):
     return records
 
 
+def read_rides_as_columns(filename):
+    '''
+    Read the bus ride data into 4 lists, representing columns
+    '''
+    routes = []
+    dates = []
+    daytypes = []
+    numrides = []
+    with open(filename) as f:
+        rows = csv.reader(f)
+        headings = next(rows)     # Skip headers
+        for row in rows:
+            routes.append(row[0])
+            dates.append(row[1])
+            daytypes.append(row[2])
+            numrides.append(int(row[3]))
+    return dict(routes=routes, dates=dates, daytypes=daytypes, numrides=numrides)
+
+
 class Row:
     def __init__(self, route, date, daytype, rides):
         self.route = route
@@ -102,11 +123,13 @@ class Row:
 
 class RowSlot:
     __slots__ = ['route', 'date', 'daytype', 'rides']
+
     def __init__(self, route, date, daytype, rides):
         self.route = route
         self.date = date
         self.daytype = daytype
         self.rides = rides
+
 
 RowTuple = namedtuple('RowTuple', ['route', 'date', 'daytype', 'rides'])
 
@@ -117,3 +140,4 @@ if __name__ == '__main__':
     trace_func(read_rides_as_class, datafile)
     trace_func(read_rides_as_named_tuple, datafile)
     trace_func(read_rides_as_slots, datafile)
+    trace_func(read_rides_as_columns, datafile)
