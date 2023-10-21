@@ -1,5 +1,5 @@
 # readrides.py
-from collections import namedtuple
+from collections import abc, namedtuple
 import csv
 
 
@@ -32,7 +32,7 @@ def read_rides_as_tuples(filename):
 
 def read_rides_as_dicts(filename):
     """Read ride data as list of dicts."""
-    records = []
+    records = RideData()
     with open(filename) as f:
         rows = csv.reader(f)
         headings = next(rows)
@@ -119,6 +119,39 @@ class Row:
         self.date = date
         self.daytype = daytype
         self.rides = rides
+
+
+class RideData(abc.Sequence):
+    def __init__(self):
+        self.routes = []
+        self.dates = []
+        self.daytypes = []
+        self.numrides = []
+
+    def __len__(self) -> int:
+        return len(self.routes)
+
+    def __getitem__(self, index):
+        if isinstance(index, int):
+            return {'route': self.routes[index],
+                    'date': self.dates[index],
+                    'daytype': self.daytypes[index],
+                    'rides': self.numrides[index]}
+        elif isinstance(index, slice):
+            records = []
+            step = index.step if index.step is not None else 1
+            for i in range(index.start, index.stop, step):
+                records.append({'route': self.routes[i],
+                                'date': self.dates[i],
+                                'daytype': self.dates[i],
+                                'rides': self.numrides[i]})
+            return records
+
+    def append(self, d):
+        self.routes.append(d['route'])
+        self.dates.append(d['date'])
+        self.daytypes.append(d['daytype'])
+        self.numrides.append(d['rides'])
 
 
 class RowSlot:
