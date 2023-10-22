@@ -1,12 +1,14 @@
 # readrides.py
 from collections import abc, namedtuple
+from reader import read_csv_as_columns
+from sys import intern
 import csv
 
 
-def trace_func(func, filename):
+def trace_func(func, *args):
     import tracemalloc
     tracemalloc.start()
-    rows = func(filename)
+    rows = func(*args)
     print(f"Traced {func.__name__}")
     print('Memory Use: Current %d, Peak %d' % tracemalloc.get_traced_memory())
     tracemalloc.stop()
@@ -174,3 +176,5 @@ if __name__ == '__main__':
     trace_func(read_rides_as_named_tuple, datafile)
     trace_func(read_rides_as_slots, datafile)
     trace_func(read_rides_as_columns, datafile)
+    trace_func(read_csv_as_columns, datafile, [str, str, str, int])
+    trace_func(read_csv_as_columns, datafile, [intern, intern, str, int])

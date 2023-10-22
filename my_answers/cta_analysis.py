@@ -1,5 +1,7 @@
 from collections import Counter
 from readrides import read_rides_as_dicts
+from reader import read_csv_as_columns
+from sys import intern
 
 
 def num_routes(rides):
@@ -30,7 +32,7 @@ def ride_increase(rides, start_year, end_year):
 
 
 if __name__ == "__main__":
-    rides = read_rides_as_dicts('Data/ctabus.csv')
+    rides = read_csv_as_columns('Data/ctabus.csv', [intern, intern, str, int])
     print(f"num routes: {num_routes(rides)}")
     print(f"day sum: {sum_day(rides, '22', '02/02/2011')}")
     print(route_totals(rides))
