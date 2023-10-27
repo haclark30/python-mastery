@@ -1,13 +1,17 @@
 import sys
 import stock
+from abc import ABC, abstractmethod
 
 
-class TableFormatter:
+class TableFormatter(ABC):
+
+    @abstractmethod
     def headings(self, headers):
-        raise NotImplementedError()
+        pass
 
+    @abstractmethod
     def row(self, rowdata):
-        raise NotImplementedError()
+        pass
 
 
 class TextTableFormatter(TableFormatter):
@@ -53,6 +57,8 @@ def create_formatter(type):
 
 
 def print_table(records, fields, formatter: TableFormatter):
+    if not isinstance(formatter, TableFormatter):
+        raise TypeError("Expected a TableFormatter")
     formatter.headings(fields)
     for r in records:
         rowdata = [getattr(r, fieldname) for fieldname in fields]
