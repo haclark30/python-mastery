@@ -1,3 +1,4 @@
+import sys
 import stock
 
 
@@ -58,8 +59,25 @@ def print_table(records, fields, formatter: TableFormatter):
         formatter.row(rowdata)
 
 
+class redirect_stdout:
+    def __init__(self, out_file) -> None:
+        self.out_file = out_file
+
+    def __enter__(self):
+        self.stdout = sys.stdout
+        sys.stdout = self.out_file
+        return self.out_file
+
+    def __exit__(self, ty, val, tb):
+        sys.stdout = self.stdout
+
+
 if __name__ == "__main__":
     portfolio = stock.read_portfolio('Data/portfolio.csv')
     formatter = create_formatter('text')
     print_table(portfolio, ['name', 'shares', 'price'], formatter)
     print_table(portfolio, ['shares', 'name'], formatter)
+
+    with redirect_stdout(open('out.txt', 'w')) as f:
+        print_table(portfolio, ['name', 'shares', 'price'], formatter)
+        f.close()

@@ -47,6 +47,13 @@ class Stock:
     def sell(self, amount):
         self._shares -= amount
 
+    def __repr__(self) -> str:
+        return f"Stock('{self.name}', {self.shares}, {self.price})"
+
+    def __eq__(self, other) -> bool:
+        return isinstance(other, Stock) and ((self.name, self.shares, self.price)
+                                             == (other.name, other.shares, other.price))
+
 
 class DStock(Stock):
     _types = (str, int, Decimal)
