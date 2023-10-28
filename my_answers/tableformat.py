@@ -45,15 +45,39 @@ class HTMLTableFormatter(TableFormatter):
         print(' '.join(data_tags))
 
 
-def create_formatter(type):
+class ColumnFormatMixin:
+    formats = []
+
+    def row(self, rowdata):
+        rowdata = [(fmt % d) for fmt, d in zip(self.formats, rowdata)]
+        super().row(rowdata)
+
+
+class UpperHeadersMixin:
+    def headings(self, headers):
+        super().headings([h.upper() for h in headers])
+
+
+def create_formatter(type, column_formats=None, upper_headers=False):
     if type == 'text':
-        return TextTableFormatter()
+        cls = TextTableFormatter
     elif type == 'csv':
-        return CSVTableFormatter()
+        cls = CSVTableFormatter
     elif type == 'html':
-        return HTMLTableFormatter()
+        cls = HTMLTableFormatter
     else:
         raise NotImplementedError("Unknown Formatter Type %s" % type)
+
+    if column_formats:
+        class aux_class(ColumnFormatMixin, cls):
+            formats = column_formats
+        cls = aux_class
+
+    if upper_headers:
+        class aux_class(UpperHeadersMixin, cls):
+            pass
+        cls = aux_class
+    return cls()
 
 
 def print_table(records, fields, formatter: TableFormatter):
@@ -87,3 +111,13 @@ if __name__ == "__main__":
     with redirect_stdout(open('out.txt', 'w')) as f:
         print_table(portfolio, ['name', 'shares', 'price'], formatter)
         f.close()
+
+    formatter = create_formatter('text', column_formats=['%s', '%d', '%0.2f'])
+    print_table(portfolio, ['name', 'shares', 'price'], formatter)
+
+    formatter = create_formatter('text', upper_headers=True)
+    print_table(portfolio, ['name', 'shares', 'price'], formatter)
+
+    formatter = create_formatter('text', column_formats=[
+                                 '%s', '%d', '%0.2f'], upper_headers=True)
+    print_table(portfolio, ['name', 'shares', 'price'], formatter)
